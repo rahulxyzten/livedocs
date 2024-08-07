@@ -1,6 +1,7 @@
 "use server";
 
 import { nanoid } from "nanoid";
+import { clerkClient } from "@clerk/nextjs/server";
 import { liveblocks } from "../liveblocks";
 import { revalidatePath } from "next/cache";
 import { getAccessType, parseStringify } from "../utils";
@@ -91,6 +92,18 @@ export const updateDocumentAccess = async ({
   updatedBy,
 }: ShareDocumentParams) => {
   try {
+    const response = await clerkClient.users.getUserList({
+      emailAddress: [email],
+    });
+    const users = response.data;
+    if (users.length === 0) {
+      return {
+        ok: false,
+        message:
+          "Your email address is not currently in our system. Kindly register on our website to get started.",
+      };
+    }
+
     const usersAccesses: RoomAccesses = {
       [email]: getAccessType(userType) as AccessType,
     };
@@ -99,28 +112,32 @@ export const updateDocumentAccess = async ({
       usersAccesses,
     });
 
-    if(room) {
+    if (room) {
       const notificationId = nanoid();
 
       await liveblocks.triggerInboxNotification({
         userId: email,
-        kind: '$documentAccess',
+        kind: "$documentAccess",
         subjectId: notificationId,
         activityData: {
           userType,
           title: `You have been granted ${userType} access to the document by ${updatedBy.name}`,
           updatedBy: updatedBy.name,
           avatar: updatedBy.avatar,
-          email: updatedBy.email
+          email: updatedBy.email,
         },
-        roomId
-      })
+        roomId,
+      });
     }
 
     revalidatePath(`/documents/${roomId}`);
-    return parseStringify(room);
+    return { ok: true, room: parseStringify(room) };
   } catch (error) {
     console.log(`Error happened while updating a room access: ${error}`);
+    return {
+      ok: false,
+      message: "An error occurred while sharing the document.",
+    };
   }
 };
 
@@ -154,9 +171,9 @@ export const removeCollaborator = async ({
 export const deleteDocument = async (roomId: string) => {
   try {
     await liveblocks.deleteRoom(roomId);
-    revalidatePath('/');
-    redirect('/');
+    revalidatePath("/");
+    redirect("/");
   } catch (error) {
     console.log(`Error happened while deleting a room: ${error}`);
   }
-}
+};

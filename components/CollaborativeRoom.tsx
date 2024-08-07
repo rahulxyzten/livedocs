@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
 import { Editor } from "@/components/editor/Editor";
 import Header from "@/components/Header";

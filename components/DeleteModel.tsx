@@ -2,9 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-
 import { deleteDocument } from "@/lib/actions/room.actions";
-
 import {
   Dialog,
   DialogClose,
@@ -15,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import { Button } from "./ui/button";
 
 export const DeleteModal = ({ roomId }: DeleteModalProps) => {

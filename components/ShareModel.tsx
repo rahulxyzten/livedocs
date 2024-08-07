@@ -35,12 +35,18 @@ const ShareModal = ({
   const shareDocumentHandler = async () => {
     setLoading(true);
 
-    await updateDocumentAccess({
+    const response = await updateDocumentAccess({
       roomId,
       email,
       userType: userType as UserType,
       updatedBy: user.info,
     });
+
+    if (response.ok) {
+      setEmail("");
+    } else {
+      alert(response.message);
+    }
 
     setLoading(false);
   };
