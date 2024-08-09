@@ -6,6 +6,11 @@ import {
   removeCollaborator,
   updateDocumentAccess,
 } from "@/lib/actions/room.actions";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const Collaborator = ({
   roomId,
@@ -55,9 +60,21 @@ const Collaborator = ({
               {loading && "updating..."}
             </span>
           </p>
-          <p className="text-sm font-light text-blue-100">
+          <p className="hidden sm:block text-sm font-light text-blue-100">
             {collaborator.email}
           </p>
+          <Popover>
+            <PopoverTrigger>
+              <p className="sm:hidden text-sm font-light text-blue-100">
+                email
+              </p>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-2 border-none bg-dark-200">
+              <p className="text-sm font-light text-blue-100">
+                {collaborator.email}
+              </p>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
